@@ -27,12 +27,8 @@ def sizeof_fmt(num):
         return '1 byte'
 
 def main():
-    try:
-        with open('key.txt', 'r') as file:
-            auth_key = file.read().strip()
-    except:
-        print "FATAL ERROR: Unable to open key.txt"
-        sys.exit()
+    with open('/home/swanson/cathrine98/dashing-storage/key.txt', 'r') as file:
+        auth_key = file.read().strip()
 
     p = subprocess.Popen(["df", "-P", MOUNT], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdoutdata, stderrdata) = p.communicate()
