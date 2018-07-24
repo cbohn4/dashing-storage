@@ -110,7 +110,10 @@ def main():
     command = command.split(" ")
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = p.communicate()
-    hours_completed = len(stdout.split())
+    hours_completed = 0
+    for i in stdout.split():
+        hours_completed += int(i)
+    hours_completed = hours_completed/3600
     path = '/common/swanson/catherine98/.dashing/'
     files = ['crane_hours.txt', 'tusker_hours.txt', 'sandhills_hours.txt']
     filename = path + files[0]
