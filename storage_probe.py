@@ -101,6 +101,31 @@ def main():
     
     dash.SendEvent('JobsCompleted', {'current': total_jobs})
 
+    #Send number of CPU Hours for Today
+    command = "sacct -a -o CPUTimeRaw -n -T"
+    command = command.split(" ")
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = p.communicate()
+    hours_completed = len(stdout.split())
+    path = '/common/swanson/catherine98/.dashing/'
+    files = ['crane_hours.txt', 'tusker_hours.txt', 'sandhills_hours.txt']
+    filename = path + files[0]
+    with open(filename, 'w') as file:
+        file.write(str(hours_completed))
+    total_hours = 0
+    for filename in files:
+        filename = path + filename
+        if os.path.isfile(filename) and os.access(filename, os.R_OK):
+            with open(filename, 'r') as file:
+                total_hours += int(file.read())
+        else:
+            print "Error reading from %s" % filename
+
+
+
+
+
+    dash.SendEvent('HoursToday', {'current': total_hours, 'last': total_hours})
 
 
 
