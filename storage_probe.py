@@ -27,12 +27,8 @@ def sizeof_fmt(num):
         return '1 byte'
 
 def main():
-    try:
-        with open('key.txt', 'r') as file:
-            auth_key = file.read().strip()
-    except:
-        print "FATAL ERROR: Unable to open key.txt"
-        sys.exit()
+    with open('/home/swanson/cathrine98/dashing-storage/key.txt', 'r') as file:
+        auth_key = file.read().strip()
 
     p = subprocess.Popen(["df", "-P", MOUNT], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdoutdata, stderrdata) = p.communicate()
@@ -105,6 +101,7 @@ def main():
     
     dash.SendEvent('JobsCompleted', {'current': total_jobs})
 
+
     #Send number of CPU Hours for Today
     command = "sacct -a -o CPUTimeRaw -n -T"
     command = command.split(" ")
@@ -129,10 +126,8 @@ def main():
             print "Error reading from %s" % filename
 
 
+    dash.SendEvent('HoursToday', {'current': total_hours})
 
-
-
-    dash.SendEvent('HoursToday', {'current': total_hours, 'last': total_hours})
 
 
 
