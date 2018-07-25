@@ -109,8 +109,6 @@ def main():
     (stdout, stderr) = p.communicate()
     stdout = map(int, stdout.split())
     hours_completed = sum(stdout)/3600
-    path = '/common/swanson/cathrine98/.dashing/'
-    files = ['crane_hours.txt', 'tusker_hours.txt', 'sandhills_hours.txt']
     filename = path + files[0]
     with open(filename, 'w') as file:
         file.write(str(hours_completed))
