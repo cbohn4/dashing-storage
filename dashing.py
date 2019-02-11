@@ -1,10 +1,10 @@
 
 import json
-import urllib2
+import urllib.request as urllib2
 
 class DashingImport:
 
-    def __init__(self, host='localhost', port=3030, auth_token=''):
+    def __init__(self, host='viz.unl.edu', port=4000, auth_token='dashing'):
         self.host = host
         self.port = port
         self.auth_token = auth_token
@@ -16,7 +16,7 @@ class DashingImport:
         send_json = json.dumps(send_dict)
 
         # Now send the widget information
-        urllib2.urlopen("http://%s:%i/widgets/%s" % ( self.host, self.port, widget ), send_json)
+        urllib2.urlopen("http://%s:%i/widgets/%s" % ( self.host, self.port, widget ), send_json.encode('utf8'))
 
 
 
