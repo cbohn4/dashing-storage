@@ -27,7 +27,7 @@ def getUNOTimeData(timeDelta, SQLItems,scoreBox):
     dataToDash = []
     with xdmoddb:
         cur = xdmoddb.cursor()
-        stmt = "SELECT account_name, SUM(cpu_time), group_name,college,campus FROM jobfact as j INNER JOIN mod_hpcdb.hpcdb_accounts as h ON j.account_id=h.account_id INNER JOIN mod_shredder.ldapGroups as s ON j.group_name=s.GroupName WHERE campus like 'UNO' and start_time_ts > "+timeDelta+" GROUP BY account_name order by SUM(cpu_time) DESC LIMIT 5;"
+        stmt = "SELECT account_name, SUM(cpu_time), group_name,college,campus FROM jobfact as j INNER JOIN mod_hpcdb.hpcdb_accounts as h ON j.account_id=h.account_id INNER JOIN mod_shredder.ldapGroups as s ON j.group_name=s.GroupName WHERE campus not like 'UNL' and campus not like 'IANR' and start_time_ts > "+timeDelta+" GROUP BY account_name order by SUM(cpu_time) DESC LIMIT 5;"
         print(stmt)
         cur.execute(stmt)
         result = cur.fetchall()
