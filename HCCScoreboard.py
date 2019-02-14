@@ -16,7 +16,7 @@ for i in lines:
 f.close()
 
 
-def getUNOTimeData(timeDelta, SQLItems,scoreBox):
+def getUNOTimeData(timeDelta, SQLItems,scoreBox,numEntries):
     xdmoddb = SQL.connect(host=SQLItems["xdmodmysql_host"],user=SQLItems["xdmodmysql_username"],password=SQLItems["xdmodmysql_pass"],db=SQLItems["xdmodmysql_db"],cursorclass=pymysql.cursors.DictCursor)
     with open('key.txt', 'r') as file:
         auth_key = file.read().strip()
@@ -27,7 +27,7 @@ def getUNOTimeData(timeDelta, SQLItems,scoreBox):
     dataToDash = []
     with xdmoddb:
         cur = xdmoddb.cursor()
-        stmt = "SELECT account_name, SUM(cpu_time), group_name,college,campus FROM jobfact as j INNER JOIN mod_hpcdb.hpcdb_accounts as h ON j.account_id=h.account_id INNER JOIN mod_shredder.ldapGroups as s ON j.group_name=s.GroupName WHERE campus not like 'UNL' and campus not like 'IANR' and start_time_ts > "+timeDelta+" GROUP BY account_name order by SUM(cpu_time) DESC LIMIT 5;"
+        stmt = "SELECT account_name, SUM(cpu_time), group_name,college,campus FROM jobfact as j INNER JOIN mod_hpcdb.hpcdb_accounts as h ON j.account_id=h.account_id INNER JOIN mod_shredder.ldapGroups as s ON j.group_name=s.GroupName WHERE campus not like 'UNL' and campus not like 'IANR' and start_time_ts > "+timeDelta+" GROUP BY account_name order by SUM(cpu_time) DESC LIMIT "+numEntries+";"
         print(stmt)
         cur.execute(stmt)
         result = cur.fetchall()
@@ -45,14 +45,14 @@ def getUNOTimeData(timeDelta, SQLItems,scoreBox):
 
 
 # SYNCOFFSET is to account for database delay regarding data pushed at midnight and is used for testing with snapshots      
-SYNCOFFSET = 1549920708-1520488737
+SYNCOFFSET =86400 
 DAY = 86400     
 WEEK = DAY * 7      
 MONTH = DAY * 30
 currentTime = int(time.time())      
 ## Last Day
-getUNOTimeData(str(currentTime - (DAY+SYNCOFFSET)),SQLItems,"TopDay")
+#getUNOTimeData(str(currentTime - (DAY+SYNCOFFSET)),SQLItems,"TopDay")
 ## Last Week
-getUNOTimeData(str(currentTime - (WEEK+SYNCOFFSET)),SQLItems,"TopWeek")
+getUNOTimeData(str(currentTime - (WEEK+SYNCOFFSET)),SQLItems,"TopWeek","5")
 ## Last Month aka 30 days
-getUNOTimeData(str(currentTime - (MONTH+SYNCOFFSET)),SQLItems,"TopMonth")
+getUNOTimeData(str(currentTime - (MONTH+SYNCOFFSET)),SQLItems,"TopMonth","15")
