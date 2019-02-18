@@ -4,10 +4,10 @@ import time
 import datetime
 import time
 import dashing
-
+import sys
 
 ### Import SQL Login
-f = open('db.yml', 'r')
+f = open(sys.argv[1], 'r')
 lines = f.readlines()
 SQLItems = {}
 for i in lines:
