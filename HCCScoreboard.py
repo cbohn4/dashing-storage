@@ -18,7 +18,7 @@ f.close()
 
 def getUNOTimeData(timeDelta, SQLItems,scoreBox,numEntries):
     xdmoddb = SQL.connect(host=SQLItems["xdmodmysql_host"],user=SQLItems["xdmodmysql_username"],password=SQLItems["xdmodmysql_pass"],db=SQLItems["xdmodmysql_db"],cursorclass=pymysql.cursors.DictCursor)
-    with open('key.txt', 'r') as file:
+    with open(sys.argv[2], 'r') as file:
         auth_key = file.read().strip()
     dash = dashing.DashingImport('viz.unl.edu', auth_token = auth_key)
     # Dashboard Data Structure
@@ -36,7 +36,8 @@ def getUNOTimeData(timeDelta, SQLItems,scoreBox,numEntries):
             #cpuHour = str(int(result[i]["SUM(cpu_time)"])/3600)
             print(i["SUM(cpu_time)"])
             cpuHour = str(round(int(i["SUM(cpu_time)"])/3600))
-
+            if i["college"] == i["campus"]:
+                i["campus"] = ""
             dataToDash.append({"label":i["account_name"],"value":cpuHour,"dept":i["college"],"campus":i["campus"]})
         print(dataToDash) 
         ### dostuff
