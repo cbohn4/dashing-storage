@@ -38,12 +38,12 @@ def main():
             continue
         if split_line[5] == MOUNT:
             dash = dashing.DashingImport('viz.unl.edu', auth_token = auth_key)
-			dashUNO = dashing.DashingImport('viz.unl.edu',port=4000, auth_token = auth_key)
+            dashUNO = dashing.DashingImport('viz.unl.edu',port=4000, auth_token = auth_key)
             send_dict = { 'min': 0, 'max': float("%.1f" % (float(split_line[1]) / terabyte)) , 'value': float("%.1f" % (float(split_line[2]) / terabyte)), 'moreinfo': "Capacity: %s" % sizeof_fmt(int(split_line[1])) }
             dash.SendEvent('CraneStorage', send_dict)
             dash.SendEvent('HCCAmazonPrice', {'craneStorage': send_dict['value']})
-			
-			dashUNO.SendEvent('CraneStorage', send_dict)
+            
+            dashUNO.SendEvent('CraneStorage', send_dict)
             dashUNO.SendEvent('HCCAmazonPrice', {'craneStorage': send_dict['value']})
 
 
@@ -80,8 +80,8 @@ def main():
     date = time.strftime('%m-%d-%Y %H:%M:%S', time.localtime(date))
     dash.SendEvent('CraneRunning', {'current': sum_running_cores, 'last': last_running_cores, 'last_period': date})
     dash.SendEvent('HCCAmazonPrice', {'CraneCores': sum_running_cores})
-	
-	dashUNO.SendEvent('CraneRunning', {'current': sum_running_cores, 'last': last_running_cores, 'last_period': date})
+    
+    dashUNO.SendEvent('CraneRunning', {'current': sum_running_cores, 'last': last_running_cores, 'last_period': date})
     dashUNO.SendEvent('HCCAmazonPrice', {'CraneCores': sum_running_cores})
     
     # send number of completed jobs
@@ -107,7 +107,7 @@ def main():
             print "Error reading from %s" % filename
     
     dash.SendEvent('JobsCompleted', {'current': total_jobs})
-	
+    
     dashUNO.SendEvent('JobsCompleted', {'current': total_jobs})
 
 
@@ -133,7 +133,7 @@ def main():
 
 
     dash.SendEvent('HoursToday', {'current': total_hours})
-	
+    
     dashUNO.SendEvent('HoursToday', {'current': total_hours})
 
 
