@@ -27,7 +27,7 @@ def getUNOTimeData(timeDelta, SQLItems,scoreBox,numEntries):
     dataToDash = []
     with xdmoddb:
         cur = xdmoddb.cursor()
-        stmt = "SELECT account_name, SUM(cpu_time), group_name,college,campus FROM jobfact as j INNER JOIN mod_hpcdb.hpcdb_accounts as h ON j.account_id=h.account_id INNER JOIN mod_shredder.ldapGroups as s ON j.group_name=s.GroupName WHERE campus not like 'UNL' and campus not like 'IANR' and start_time_ts > "+timeDelta+" GROUP BY account_name order by SUM(cpu_time) DESC LIMIT "+numEntries+";"
+        stmt = "SELECT j.person_id,username, SUM(cpu_time), group_name,college,campus FROM jobfact as j INNER JOIN modw.systemaccount as h ON j.person_id=h.person_id INNER JOIN mod_shredder.ldapGroups as s ON j.group_name=s.GroupName WHERE campus not like 'UNL' and campus not like 'IANR' and start_time_ts > "+timeDelta+" GROUP BY j.person_id order by SUM(cpu_time) DESC LIMIT "+numEntries+";"
         print(stmt)
         cur.execute(stmt)
         result = cur.fetchall()
@@ -38,7 +38,7 @@ def getUNOTimeData(timeDelta, SQLItems,scoreBox,numEntries):
             cpuHour = str(round(int(i["SUM(cpu_time)"])/3600))
             if i["college"] == i["campus"]:
                 i["campus"] = ""
-            dataToDash.append({"label":i["account_name"],"value":cpuHour,"dept":i["college"],"campus":i["campus"]})
+            dataToDash.append({"label":i["username"],"value":cpuHour,"dept":i["college"].replace("College of",""),"campus":i["campus"]})
         print(dataToDash) 
         ### dostuff
         dash.SendEvent(scoreBox, {'items': dataToDash})
@@ -54,6 +54,6 @@ currentTime = int(time.time())
 ## Last Day
 #getUNOTimeData(str(currentTime - (DAY+SYNCOFFSET)),SQLItems,"TopDay")
 ## Last Week
-getUNOTimeData(str(currentTime - (WEEK+SYNCOFFSET)),SQLItems,"TopWeek","5")
+getUNOTimeData(str(currentTime - (WEEK+SYNCOFFSET)),SQLItems,"TopWeek","7")
 ## Last Month aka 30 days
-getUNOTimeData(str(currentTime - (MONTH+SYNCOFFSET)),SQLItems,"TopMonth","15")
+getUNOTimeData(str(currentTime - (MONTH+SYNCOFFSET)),SQLItems,"TopMonth","20")
