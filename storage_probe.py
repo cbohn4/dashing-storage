@@ -5,9 +5,9 @@ import dashing
 import os
 import time
 import sys
-
+import socket
 MOUNT = "/lustre"
-
+CLUSTER = socket.gethostname().split(".")[1].capitalize()
 from math import log
 terabyte = 1073741824
 
@@ -40,11 +40,11 @@ def main():
             dash = dashing.DashingImport('viz.unl.edu', auth_token = auth_key)
             dashUNO = dashing.DashingImport('viz.unl.edu',port=4000, auth_token = auth_key)
             send_dict = { 'min': 0, 'max': float("%.1f" % (float(split_line[1]) / terabyte)) , 'value': float("%.1f" % (float(split_line[2]) / terabyte)), 'moreinfo': "Capacity: %s" % sizeof_fmt(int(split_line[1])) }
-            dash.SendEvent('CraneStorage', send_dict)
-            dash.SendEvent('HCCAmazonPrice', {'craneStorage': send_dict['value']})
+            dash.SendEvent(CLUSTER+'Storage', send_dict)
+            dash.SendEvent('HCCAmazonPrice', {CLUSTER.lower()+'Storage': send_dict['value']})
             
-            dashUNO.SendEvent('CraneStorage', send_dict)
-            dashUNO.SendEvent('HCCAmazonPrice', {'craneStorage': send_dict['value']})
+            dashUNO.SendEvent(CLUSTER+'Storage', send_dict)
+            dashUNO.SendEvent('HCCAmazonPrice', {CLUSTER.lower()+'Storage': send_dict['value']})
 
 
     # Send the number of jobs running
@@ -78,11 +78,11 @@ def main():
     with open('dashing.txt', 'w') as file:
         file.write(str(sum_running_cores))
     date = time.strftime('%m-%d-%Y %H:%M:%S', time.localtime(date))
-    dash.SendEvent('CraneRunning', {'current': sum_running_cores, 'last': last_running_cores, 'last_period': date})
-    dash.SendEvent('HCCAmazonPrice', {'CraneCores': sum_running_cores})
+    dash.SendEvent(CLUSTER+'Running', {'current': sum_running_cores, 'last': last_running_cores, 'last_period': date})
+    dash.SendEvent('HCCAmazonPrice', {CLUSTER+'Cores': sum_running_cores})
     
-    dashUNO.SendEvent('CraneRunning', {'current': sum_running_cores, 'last': last_running_cores, 'last_period': date})
-    dashUNO.SendEvent('HCCAmazonPrice', {'CraneCores': sum_running_cores})
+    dashUNO.SendEvent(CLUSTER+'Running', {'current': sum_running_cores, 'last': last_running_cores, 'last_period': date})
+    dashUNO.SendEvent('HCCAmazonPrice', {CLUSTER+'Cores': sum_running_cores})
     
     # send number of completed jobs
     current_time = time.strftime('%m/%d/%y-%H:%M:%S', time.localtime(time.time()))
