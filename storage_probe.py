@@ -6,6 +6,8 @@ import os
 import time
 import sys
 import socket
+import urllib2
+import json
 MOUNT = "/lustre"
 CLUSTER = socket.gethostname().split(".")[1].capitalize()
 from math import log
@@ -135,6 +137,21 @@ def main():
     dash.SendEvent('HoursToday', {'current': total_hours})
     
     dashUNO.SendEvent('HoursToday', {'current': total_hours})
+    
+    # Send Anvil Information
+    
+    f = urllib2.urlopen("http://anvil-beta.unl.edu:8123/")
+    rawData = json.load(f)
+    print(rawData)
+    dashUNO.SendEvent('AnvilTile', {'current_vm': rawData["vm_count"]})
+    time.sleep(1)
+    dashUNO.SendEvent('AnvilTile', {'current_cores': rawData["core_count"]})
+    time.sleep(1)
+    dashUNO.SendEvent('AnvilTile', {'current_mem': rawData["mem_count"]})
+    time.sleep(1)
+    dashUNO.SendEvent('AnvilTile', {'current_vol': rawData["volume_gb"]})
+    time.sleep(1)
+    dashUNO.SendEvent('AnvilTile', {'current_disk': rawData["disk_gb"]})
 
 
 
