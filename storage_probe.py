@@ -29,7 +29,7 @@ def sizeof_fmt(num):
         return '1 byte'
 
 def main():
-    with open('/home/swanson/cathrine98/dashing-storage/key.txt', 'r') as file:
+    with open('key.txt', 'r') as file:
         auth_key = file.read().strip()
 
     p = subprocess.Popen(["df", "-P", MOUNT], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -94,7 +94,7 @@ def main():
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = p.communicate()
     jobs_completed = len(stdout.split())
-    path = '/common/swanson/cathrine98/.dashing/'
+    path = '/common/swanson/cbohn/.dashing/'
     files = ['crane_jobs.txt', 'tusker_jobs.txt', 'sandhills_jobs.txt']
     filename = path + files[0]
     with open(filename, 'w') as file:
@@ -147,11 +147,11 @@ def main():
     time.sleep(1)
     dashUNO.SendEvent('AnvilTile', {'current_cores': rawData["core_count"]})
     time.sleep(1)
-    dashUNO.SendEvent('AnvilTile', {'current_mem': rawData["mem_count"]})
+    dashUNO.SendEvent('AnvilTile', {'current_mem': str(round(int(rawData["mem_count"])/(1024.0**2),2))})
     time.sleep(1)
-    dashUNO.SendEvent('AnvilTile', {'current_vol': rawData["volume_gb"]})
+    dashUNO.SendEvent('AnvilTile', {'current_vol': str(round(int(rawData["volume_gb"])/1024.0,2))})
     time.sleep(1)
-    dashUNO.SendEvent('AnvilTile', {'current_disk': rawData["disk_gb"]})
+    dashUNO.SendEvent('AnvilTile', {'current_disk': str(round(int(rawData["disk_gb"])/1024.0,2))})
 
 
 
