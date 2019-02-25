@@ -8,6 +8,7 @@ import sys
 import socket
 import urllib2
 import json
+import re
 MOUNT = "/lustre"
 CLUSTER = socket.gethostname().split(".")[1].capitalize()
 from math import log
@@ -139,10 +140,10 @@ def main():
     dashUNO.SendEvent('HoursToday', {'current': total_hours})
     
     # Send Anvil Information
+    ## Time Delay is to allow dashing to keep up with POST
     
     f = urllib2.urlopen("http://anvil-beta.unl.edu:8123/")
     rawData = json.load(f)
-    print(rawData)
     dashUNO.SendEvent('AnvilTile', {'current_vm': rawData["vm_count"]})
     time.sleep(1)
     dashUNO.SendEvent('AnvilTile', {'current_cores': rawData["core_count"]})
@@ -152,6 +153,15 @@ def main():
     dashUNO.SendEvent('AnvilTile', {'current_vol': str(round(int(rawData["volume_gb"])/1024.0,2))})
     time.sleep(1)
     dashUNO.SendEvent('AnvilTile', {'current_disk': str(round(int(rawData["disk_gb"])/1024.0,2))})
+
+    # Red Storage
+    redT2 = urllib2.urlopen("http://t2.unl.edu:8088/dfshealth.jsp")
+    redData = re.findall("\d+\.\d+",str(redT2.read()))
+    dash.SendEvent('RedStorage', {'min': 0, 'max': float(redData[9])*1024, 'value': float(redData[10])*1024, 'Capacity': redData[9] + " PB"})  
+    dashUNO.SendEvent('RedStorage', {'min': 0, 'max': float(redData[9])*1024, 'value': float(redData[10])*1024, 'Capacity': redData[9] + " PB"}) 
+    dash.SendEvent('HCCAmazonPrice', {'redStorage':float(redData[10])*1024})  
+    dashUNO.SendEvent('HCCAmazonPrice', {'redStorage':float(redData[10])*1024})
+
 
 
 
