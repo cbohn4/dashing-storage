@@ -95,7 +95,7 @@ def main():
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = p.communicate()
     jobs_completed = len(stdout.split())
-    path = '/common/swanson/cbohn/.dashing/'
+    path = '/common/swanson/.dashing/'
     files = ['crane_jobs.txt', 'tusker_jobs.txt', 'sandhills_jobs.txt']
     filename = path + files[0]
     with open(filename, 'w') as file:
