@@ -9,6 +9,10 @@ import socket
 import urllib2
 import json
 import re
+import pymysql as SQL
+import pymysql.cursors
+import operator
+
 MOUNT = "/lustre"
 CLUSTER = socket.gethostname().split(".")[1].capitalize()
 from math import log
@@ -123,7 +127,7 @@ def main():
     hours_completed = sum(stdout)/3600
     files = ['crane_hours.txt', 'tusker_hours.txt', 'sandhills_hours.txt']
     filename = path + files[0]
-    with open(filename, 'w') as file:
+    with open(path + CLUSTER.lower()+'_hours.txt', 'w') as file:
         file.write(str(hours_completed))
     total_hours = 0
     for filename in files:
@@ -161,6 +165,58 @@ def main():
     dashUNO.SendEvent('RedStorage', {'min': 0, 'max': float(redData[9])*1024, 'value': float(redData[10])*1024, 'Capacity': redData[9] + " PB"}) 
     dash.SendEvent('HCCAmazonPrice', {'redStorage':float(redData[10])*1024})  
     dashUNO.SendEvent('HCCAmazonPrice', {'redStorage':float(redData[10])*1024})
+    
+    
+    
+    # Top Users UNL
+    dbFile = open('db.yml', 'r')
+    lines = dbFile.readlines()
+    SQLItems = {}
+    for i in lines:
+        SQLItems[i.split(" ")[0]] = i.split(" ")[1][:-1]
+        
+    f.close()
+    
+    rcfdb = SQL.connect(host=SQLItems["rcfmysql_host"],user=SQLItems["rcfmysql_username"],passwd=SQLItems["rcfmysql_pass"],db=SQLItems["rcfmysql_db"],cursorclass=pymysql.cursors.DictCursor)
+    
+    ## Grab this clusters squeue
+    
+    command = "squeue -h -t R -o '%u %C'"
+    p = subprocess.Popen(command,shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = p.communicate()
+    file = open(path + CLUSTER.lower()+'_users.txt', 'w')
+    file.write(stdout)
+    file.close()
+    
+    
+    
+    ## Pull top Users
+    files = ['crane_users.txt', 'tusker_users.txt']
+    topUsers = {}
+    for file in files:
+        filename = path + file
+        if os.path.isfile(filename) and os.access(filename, os.R_OK):
+            userFile = open(filename,'r').readlines()
+            for line in userFile:
+                if line.split(',')[0] in topUsers:
+                    topUsers[line.split(' ')[0]] += int(line.split(' ')[1])
+                else:
+                    topUsers[line.split(' ')[0]] = int(line.split(' ')[1])
+    topUsers25 = sorted(topUsers.items(), key=operator.itemgetter(1), reverse=True)[:25]
+    
+    ## The real magic of sql begins
+    dataToDash = []
+    cur = rcfdb.cursor()
+    for k,v in topUsers25:
+        stmt = "select Department, Campus from Personal where LoginID = \"" + k + "\";"
+        cur.execute(stmt)
+        result = cur.fetchall()[0]
+        dataToDash.append({"label":k,"value":v,"dept":result["Department"],"campus":result["Campus"]})
+    dash.SendEvent('BiggestUsers', {'items': dataToDash})
+    cur.close()
+    
+    
+    
 
 
 
