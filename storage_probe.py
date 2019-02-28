@@ -211,7 +211,7 @@ def main():
         stmt = "select Department, Campus from Personal where LoginID = \"" + k + "\";"
         cur.execute(stmt)
         result = cur.fetchall()[0]
-        dataToDash.append({"label":k,"value":v,"dept":result["Department"],"campus":result["Campus"]})
+        dataToDash.append({"label":k[:9],"value":v,"dept":result["Department"][:14],"campus":result["Campus"]})
     dash.SendEvent('BiggestUsers', {'items': dataToDash})
     cur.close()
     
