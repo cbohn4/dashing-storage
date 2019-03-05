@@ -35,9 +35,9 @@ GCP_MEM = 0.004237 # per GB Hour
 GCP_STOR = 0.00005479452 # per GB Hour // 0.040 per GB/Month
 GCP_NET = 0.08/1024 # per GB
 #Azure -- 4 Core Instance with 8GB Memory for 1 hour
-AZ_CPU = 0.09
+AZ_CPU = 0.06
 AZ_MEM = 0
-AZ_STOR = 1.54/32 # per GB Hour // 0.048 per GB/Month
+AZ_STOR = (1.54/32)/730 # per GB Hour // 0.048 per GB/Month
 AZ_NET = 0.0865722 # per GB
 #DO -- 4 Core Instance with 8GB Memory for 1 hour
 DO_CPU =  0.0119
