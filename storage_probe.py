@@ -197,8 +197,8 @@ def main():
         filename = path + file
         if os.path.isfile(filename) and os.access(filename, os.R_OK):
             userFile = open(filename,'r').readlines()
-            for line in userFile:
-                if line.split(',')[0] in topUsers:
+            for line in userFile:              
+                if line.split(' ')[0] in topUsers:
                     topUsers[line.split(' ')[0]] += int(line.split(' ')[1])
                 else:
                     topUsers[line.split(' ')[0]] = int(line.split(' ')[1])
@@ -211,6 +211,10 @@ def main():
         stmt = "select Department, Campus from Personal where LoginID = \"" + k + "\";"
         cur.execute(stmt)
         result = cur.fetchall()[0]
+        if result["Department"] == None:
+            result["Department"] = ""
+        if result["Campus"] == None:
+            result["Campus"] = ""
         dataToDash.append({"label":k[:9],"value":v,"dept":result["Department"][:14],"campus":result["Campus"]})
     dash.SendEvent('BiggestUsers', {'items': dataToDash})
     cur.close()
