@@ -20,7 +20,7 @@ for i in lines:
 f.close()
 with open('key.txt', 'r') as file:
     auth_key = file.read().strip()
-dash = dashing.DashingImport('viz.unl.edu',port=5000, auth_token = auth_key)
+dash = dashing.DashingImport('viz.unl.edu', auth_token = auth_key)
 
 ### Cloud Service Pricing
 
@@ -81,8 +81,7 @@ def getPricingData(timeDelta, SQLItems):
     ### Handle Authentication with database and dashing
     xdmoddb = SQL.connect(host=SQLItems["xdmodmysql_host"],user=SQLItems["xdmodmysql_username"],password=SQLItems["xdmodmysql_pass"],db=SQLItems["xdmodmysql_db"],cursorclass=pymysql.cursors.DictCursor)
     with open(sys.argv[2], 'r') as file:
-        auth_key = file.read().strip()
-    dash = dashing.DashingImport('viz.unl.edu', auth_token = auth_key)   
+        auth_key = file.read().strip()   
     with xdmoddb:
         cur = xdmoddb.cursor()
         stmt = "SELECT cpu_time,start_time_ts, end_time_ts, mem_req   FROM jobfact WHERE start_time_ts > "+timeDelta+";"
